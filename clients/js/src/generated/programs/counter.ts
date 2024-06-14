@@ -7,14 +7,14 @@
  */
 
 import {
-  Address,
   containsBytes,
   fixEncoderSize,
   getBytesEncoder,
+  type Address,
 } from '@solana/web3.js';
 import {
-  ParsedCreateInstruction,
-  ParsedIncrementInstruction,
+  type ParsedCreateInstruction,
+  type ParsedIncrementInstruction,
 } from '../instructions';
 
 export const COUNTER_PROGRAM_ADDRESS =
