@@ -4,3 +4,9 @@ members = ["clients/rust", "program"]
 
 [profile.release]
 overflow-checks = true
+
+# Specify Rust toolchains for rustfmt, clippy, and build.
+# Any unprovided toolchains default to stable.
+[workspace.metadata.toolchains]
+format = "1.75.0"
+lint = "1.75.0"
