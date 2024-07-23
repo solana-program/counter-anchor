@@ -136,6 +136,7 @@ jobs:
           cargo-cache-key: cargo-programs
           cargo-cache-local-key: cargo-local
           node: ${{ env.NODE_VERSION }}
+          solana: ${{ env.SOLANA_VERSION }}
           anchor: ${{ env.ANCHOR_VERSION }}
 
       - name: Generate IDLs
