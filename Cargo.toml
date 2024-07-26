@@ -5,6 +5,10 @@ members = ["clients/rust", "program"]
 [profile.release]
 overflow-checks = true
 
+[workspace.metadata.cli]
+anchor = "0.30.0"
+solana = "1.18.18"
+
 # Specify Rust toolchains for rustfmt, clippy, and build.
 # Any unprovided toolchains default to stable.
 [workspace.metadata.toolchains]

@@ -11,6 +11,7 @@ import {
   fixEncoderSize,
   getBytesEncoder,
   type Address,
+  type ReadonlyUint8Array,
 } from '@solana/web3.js';
 import {
   type ParsedCreateInstruction,
@@ -25,9 +26,9 @@ export enum CounterAccount {
 }
 
 export function identifyCounterAccount(
-  account: { data: Uint8Array } | Uint8Array
+  account: { data: ReadonlyUint8Array } | ReadonlyUint8Array
 ): CounterAccount {
-  const data = account instanceof Uint8Array ? account : account.data;
+  const data = 'data' in account ? account.data : account;
   if (
     containsBytes(
       data,
@@ -50,10 +51,9 @@ export enum CounterInstruction {
 }
 
 export function identifyCounterInstruction(
-  instruction: { data: Uint8Array } | Uint8Array
+  instruction: { data: ReadonlyUint8Array } | ReadonlyUint8Array
 ): CounterInstruction {
-  const data =
-    instruction instanceof Uint8Array ? instruction : instruction.data;
+  const data = 'data' in instruction ? instruction.data : instruction;
   if (
     containsBytes(
       data,
