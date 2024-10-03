@@ -34,6 +34,14 @@ import {
 import { COUNTER_PROGRAM_ADDRESS } from '../programs';
 import { getAccountMetaFactory, type ResolvedAccount } from '../shared';
 
+export const CREATE_DISCRIMINATOR = new Uint8Array([
+  24, 30, 200, 40, 5, 28, 7, 119,
+]);
+
+export function getCreateDiscriminatorBytes() {
+  return fixEncoderSize(getBytesEncoder(), 8).encode(CREATE_DISCRIMINATOR);
+}
+
 export type CreateInstruction<
   TProgram extends string = typeof COUNTER_PROGRAM_ADDRESS,
   TAccountCounter extends string | IAccountMeta<string> = string,
@@ -74,10 +82,7 @@ export function getCreateInstructionDataEncoder(): Encoder<CreateInstructionData
       ['discriminator', fixEncoderSize(getBytesEncoder(), 8)],
       ['authority', getAddressEncoder()],
     ]),
-    (value) => ({
-      ...value,
-      discriminator: new Uint8Array([24, 30, 200, 40, 5, 28, 7, 119]),
-    })
+    (value) => ({ ...value, discriminator: CREATE_DISCRIMINATOR })
   );
 }
 
@@ -113,16 +118,18 @@ export function getCreateInstruction<
   TAccountCounter extends string,
   TAccountPayer extends string,
   TAccountSystemProgram extends string,
+  TProgramAddress extends Address = typeof COUNTER_PROGRAM_ADDRESS,
 >(
-  input: CreateInput<TAccountCounter, TAccountPayer, TAccountSystemProgram>
+  input: CreateInput<TAccountCounter, TAccountPayer, TAccountSystemProgram>,
+  config?: { programAddress?: TProgramAddress }
 ): CreateInstruction<
-  typeof COUNTER_PROGRAM_ADDRESS,
+  TProgramAddress,
   TAccountCounter,
   TAccountPayer,
   TAccountSystemProgram
 > {
   // Program address.
-  const programAddress = COUNTER_PROGRAM_ADDRESS;
+  const programAddress = config?.programAddress ?? COUNTER_PROGRAM_ADDRESS;
 
   // Original accounts.
   const originalAccounts = {
@@ -156,7 +163,7 @@ export function getCreateInstruction<
       args as CreateInstructionDataArgs
     ),
   } as CreateInstruction<
-    typeof COUNTER_PROGRAM_ADDRESS,
+    TProgramAddress,
     TAccountCounter,
     TAccountPayer,
     TAccountSystemProgram

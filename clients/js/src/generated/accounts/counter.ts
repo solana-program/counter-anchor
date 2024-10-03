@@ -37,6 +37,14 @@ import {
   type ReadonlyUint8Array,
 } from '@solana/web3.js';
 
+export const COUNTER_DISCRIMINATOR = new Uint8Array([
+  255, 176, 4, 245, 188, 253, 124, 25,
+]);
+
+export function getCounterDiscriminatorBytes() {
+  return fixEncoderSize(getBytesEncoder(), 8).encode(COUNTER_DISCRIMINATOR);
+}
+
 export type Counter = {
   discriminator: ReadonlyUint8Array;
   authority: Address;
@@ -52,10 +60,7 @@ export function getCounterEncoder(): Encoder<CounterArgs> {
       ['authority', getAddressEncoder()],
       ['count', getU64Encoder()],
     ]),
-    (value) => ({
-      ...value,
-      discriminator: new Uint8Array([255, 176, 4, 245, 188, 253, 124, 25]),
-    })
+    (value) => ({ ...value, discriminator: COUNTER_DISCRIMINATOR })
   );
 }
 

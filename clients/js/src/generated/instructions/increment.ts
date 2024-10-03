@@ -32,6 +32,14 @@ import {
 import { COUNTER_PROGRAM_ADDRESS } from '../programs';
 import { getAccountMetaFactory, type ResolvedAccount } from '../shared';
 
+export const INCREMENT_DISCRIMINATOR = new Uint8Array([
+  11, 18, 104, 9, 104, 174, 59, 33,
+]);
+
+export function getIncrementDiscriminatorBytes() {
+  return fixEncoderSize(getBytesEncoder(), 8).encode(INCREMENT_DISCRIMINATOR);
+}
+
 export type IncrementInstruction<
   TProgram extends string = typeof COUNTER_PROGRAM_ADDRESS,
   TAccountCounter extends string | IAccountMeta<string> = string,
@@ -59,10 +67,7 @@ export type IncrementInstructionDataArgs = {};
 export function getIncrementInstructionDataEncoder(): Encoder<IncrementInstructionDataArgs> {
   return transformEncoder(
     getStructEncoder([['discriminator', fixEncoderSize(getBytesEncoder(), 8)]]),
-    (value) => ({
-      ...value,
-      discriminator: new Uint8Array([11, 18, 104, 9, 104, 174, 59, 33]),
-    })
+    (value) => ({ ...value, discriminator: INCREMENT_DISCRIMINATOR })
   );
 }
 
@@ -93,15 +98,13 @@ export type IncrementInput<
 export function getIncrementInstruction<
   TAccountCounter extends string,
   TAccountAuthority extends string,
+  TProgramAddress extends Address = typeof COUNTER_PROGRAM_ADDRESS,
 >(
-  input: IncrementInput<TAccountCounter, TAccountAuthority>
-): IncrementInstruction<
-  typeof COUNTER_PROGRAM_ADDRESS,
-  TAccountCounter,
-  TAccountAuthority
-> {
+  input: IncrementInput<TAccountCounter, TAccountAuthority>,
+  config?: { programAddress?: TProgramAddress }
+): IncrementInstruction<TProgramAddress, TAccountCounter, TAccountAuthority> {
   // Program address.
-  const programAddress = COUNTER_PROGRAM_ADDRESS;
+  const programAddress = config?.programAddress ?? COUNTER_PROGRAM_ADDRESS;
 
   // Original accounts.
   const originalAccounts = {
@@ -122,7 +125,7 @@ export function getIncrementInstruction<
     programAddress,
     data: getIncrementInstructionDataEncoder().encode({}),
   } as IncrementInstruction<
-    typeof COUNTER_PROGRAM_ADDRESS,
+    TProgramAddress,
     TAccountCounter,
     TAccountAuthority
   >;
